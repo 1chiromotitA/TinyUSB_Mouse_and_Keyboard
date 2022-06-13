@@ -53,7 +53,7 @@
  *****************************/ 
 
   #include <Adafruit_TinyUSB.h>
-  #include <TinyUSB_Mouse_and_Keyboard.h>
+  #include <TinyUSB_Mouse_and_KeyboardJP.h>
   
   #define RID_KEYBOARD 1
   #define RID_MOUSE 2
@@ -161,8 +161,8 @@
     delay(2);
   }
   
-  #define SHIFT 0x80
-  const uint8_t _asciimap[128] =
+  #define SHIFT 0x100
+  const uint16_t _asciimap[128] =
   {
     0x00,             // NUL
     0x00,             // SOH
@@ -177,7 +177,7 @@
     0x28,     // LF Enter
     0x00,             // VT 
     0x00,             // FF 
-    0x00,             // CR 
+    0x28,             //JP ENTER// CR 
     0x00,             // SO 
     0x00,             // SI 
     0x00,             // DEL
@@ -199,16 +199,16 @@
   
     0x2c,      //  ' '
     0x1e|SHIFT,    // !
-    0x34|SHIFT,    // "
+    0x1f|SHIFT,    // " JP
     0x20|SHIFT,    // #
     0x21|SHIFT,    // $
     0x22|SHIFT,    // %
-    0x24|SHIFT,    // &
-    0x34,          // '
-    0x26|SHIFT,    // (
-    0x27|SHIFT,    // )
-    0x25|SHIFT,    // *
-    0x2e|SHIFT,    // +
+    0x23|SHIFT,    // &
+    0x24|SHIFT,    // ' JP
+    0x25|SHIFT,    // ( JP
+    0x26|SHIFT,    // ) JP
+    0x34|SHIFT,    // * JP
+    0x33|SHIFT,    // + JP
     0x36,          // ,
     0x2d,          // -
     0x37,          // .
@@ -223,13 +223,13 @@
     0x24,          // 7
     0x25,          // 8
     0x26,          // 9
-    0x33|SHIFT,      // :
+    0x34,          // : JP
     0x33,          // ;
     0x36|SHIFT,      // <
-    0x2e,          // =
+    0x2d|SHIFT,      // = JP
     0x37|SHIFT,      // >
     0x38|SHIFT,      // ?
-    0x1f|SHIFT,      // @
+    0x2f,            // @ JP
     0x04|SHIFT,      // A
     0x05|SHIFT,      // B
     0x06|SHIFT,      // C
@@ -256,12 +256,12 @@
     0x1b|SHIFT,      // X
     0x1c|SHIFT,      // Y
     0x1d|SHIFT,      // Z
-    0x2f,          // [
-    0x31,          // bslash
-    0x30,          // ]
-    0x23|SHIFT,    // ^
-    0x2d|SHIFT,    // _
-    0x35,          // `
+    0x30,          // [ JP
+    0x89,          // ¥\bslash JP
+    0x32,          // ] JP
+    0x2e,          // ^ JP
+    0x87|SHIFT,    // _ JP
+    0x2f|SHIFT,    // ` JP
     0x04,          // a
     0x05,          // b
     0x06,          // c
@@ -288,10 +288,10 @@
     0x1b,          // x
     0x1c,          // y
     0x1d,          // z
-    0x2f|SHIFT,    // {
-    0x31|SHIFT,    // |
-    0x30|SHIFT,    // }
-    0x35|SHIFT,    // ~
+    0x30|SHIFT,    // { JP
+    0x89|SHIFT,    // | JP
+    0x32|SHIFT,    // } JP
+    0x2e|SHIFT,    // ~ JP
     0       // DEL
   };
   
@@ -302,21 +302,42 @@
   size_t TinyKeyboard_::press(uint8_t k) 
   {
     uint8_t i;
+    
     if (k >= 136) {     // it's a non-printing key (not a modifier)
-      k = k - 136;
+      switch(k){//JP
+          case 0xB5: //Up
+            Keyboard.write(KEY_UP_ARROW);
+            break;
+          case 0xB6: //Down
+            Keyboard.write(KEY_DOWN_ARROW);
+            break;
+          case 0xB4: //Left
+            Keyboard.write(KEY_LEFT_ARROW);
+            break;
+          case 0xB7: //Right
+            Keyboard.write(KEY_RIGHT_ARROW);
+            break;  
+        default:
+          k = k - 136;
+      
+    }
     } else if (k >= 128) {  // it's a modifier key
       _keyReport.modifiers |= (1<<(k-128));
       k = 0;
     } else {        // it's a printing key
-      k = pgm_read_byte(_asciimap + k);
-      if (!k) {
+      //k = pgm_read_byte(_asciimap + k);
+      uint16_t c = _asciimap[k];//JP
+      //if (!k) {
+      if (!c) {    //JP
         setWriteError();
         return 0;
       }
-      if (k & 0x80) {           // it's a capital letter or other character reached with shift
+      //if (k & 0x80) {           // it's a capital letter or other character reached with shift
+      if  (c & SHIFT) {          //JP it's a capital letter or other character reached with shift
         _keyReport.modifiers |= 0x02; // the left shift modifier
-        k &= 0x7F;
+        //k &= 0x7F;
       }
+      k = (uint8_t)(c & 0xFF);  //JP
     }
     
     // Add k to the key report only if it's not already present
@@ -347,19 +368,38 @@
   {
     uint8_t i;
     if (k >= 136) {     // it's a non-printing key (not a modifier)
-      k = k - 136;
+      switch(k){//JP
+          case 0xB5: //Up
+            Keyboard.write(KEY_UP_ARROW);
+            break;
+          case 0xB6: //Down
+            Keyboard.write(KEY_DOWN_ARROW);
+            break;
+          case 0xB4: //Left
+            Keyboard.write(KEY_LEFT_ARROW);
+            break;
+          case 0xB7: //Right
+            Keyboard.write(KEY_RIGHT_ARROW);
+            break;       
+        default:
+          k = k - 136;
+    }
     } else if (k >= 128) {  // it's a modifier key
       _keyReport.modifiers &= ~(1<<(k-128));
       k = 0;
     } else {        // it's a printing key
-      k = pgm_read_byte(_asciimap + k);
-      if (!k) {
+      //k = pgm_read_byte(_asciimap + k);
+      uint16_t c = _asciimap[k];//JP
+      //if (!k) {
+      if (!c) {//JP    
         return 0;
       }
-      if (k & 0x80) {             // it's a capital letter or other character reached with shift
+      //if (k & 0x80) {             // it's a capital letter or other character reached with shift
+    if (c & SHIFT) {          //JP it's a capital letter or other character reached with shift
         _keyReport.modifiers &= ~(0x02);  // the left shift modifier
-        k &= 0x7F;
+        //k &= 0x7F;
       }
+      k = (uint8_t)(c & 0xFF);//JP
     }
     
     // Test the key report to see if k is present.  Clear it if it exists.
