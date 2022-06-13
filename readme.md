@@ -1,28 +1,16 @@
-﻿# TinyUSB Mouse and Keyboard library
-
-This library provides an Arduino Mouse.h and Keyboard.h compatible API for TinyUSB stack mouse and keyboard control.
-
-Copy all files to your "Arduino/libraries". See the "examples" folder for sample sketches.
-
-This module simulates the standard Arduino "Mouse.h" API and Arduino "Keyboard.h" API for use with the TinyUSB HID API. Instead of doing
-
-    #include <HID.h>
-    #include <Mouse.h>
-    #include <Keyboard.h>
-
-Simply do
-
-    #include <TinyUSB_Mouse_and_Keyboard.h>
-	 
-and this module will automatically select whether or not to use the standard Arduino mouse API or the TinyUSB API.
-
-Also be sure to check out the companion library "[BLE52_Mouse_and_Keyboard](https://github.com/cyborg5/BLE52_Mouse_and_Keyboard)" which provides a similar interface for using BLE connections on an nRF52840.
+# TinyUSB Mouse and Keyboard JP
 
 
-## Redesigned from initial release to be a single library
+TinyUSB Mouse and Keyboard libraryをForkして日本語入力にキーを置き換え、CardKB用に矢印キーの入力とCardKB.inoを追加したものです
 
-## Known issues:
+CardKBは1000円ちょっとで買えてカードサイズの価格破壊キーボードユニットですが、搭載されているマイコンで大体の処理をやってくれるため追加したい処理だけ自分で書くことができます
 
- - Intermittent problems using Serial.print() or Serial.println() but it is not always reproducible. We're working on it.
- 
+本体のコードは超シンプルなのでTinyUSB対応のマイコンならなんでも動くと思われます
+
+
+M5Stackと連携してBluetoothキーボード・マウス化を目指してコードを追加していく予定です
+
+
+
+日本語化参考（https://qiita.com/nak435/items/0ed2e371d43afb17ec72#12-pressrelease%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E5%AF%BE%E5%BF%9C）
 
