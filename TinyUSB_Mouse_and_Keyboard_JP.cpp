@@ -304,7 +304,8 @@
     uint8_t i;
     
     if (k >= 136) {     // it's a non-printing key (not a modifier)
-      switch(k){//JP
+      switch(k){//JP 矢印キーの挙動を追加した部分　ここに追加したい処理を書いていけるはず
+                //同じのを2回書くのでテーブル化とかで参照したほうがいいかも
           case 0xB5: //Up
             Keyboard.write(KEY_UP_ARROW);
             break;
